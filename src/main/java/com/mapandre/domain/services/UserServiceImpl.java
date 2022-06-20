@@ -19,8 +19,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User post(UserRequestDto entity){
-        return repository.save(convertRequest(entity));
+    public User saveUser(UserRequestDto entity){
+        return repository.save(entity.convertToModel());
     }
 
     @Override
@@ -40,14 +40,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User putById(UUID externalId, UserRequestDto entity){
+    public User updateById(UUID externalId, UserRequestDto entity){
         return repository.findByExternalId(externalId).stream()
                 .map(user -> user = updateData(entity, user.getExternalId()))
                 .findFirst().orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND_EXCEPTION_MESSAGE));
-    }
-
-    private User convertRequest(UserRequestDto requestDto){
-        return new User(UUID.randomUUID(), requestDto.getFirstName(), requestDto.getLastName(), requestDto.getCpf(), requestDto.getPassword(), requestDto.getBirthDate());
     }
 
     private User updateData(UserRequestDto requestDto, UUID externalId){

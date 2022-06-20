@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    User post(UserRequestDto entity);
+    User saveUser(UserRequestDto entity);
     List<User> getAll();
     User getById(UUID externalId);
     void deleteById(UUID externalId);
-    User putById(UUID externalId, UserRequestDto entity);
+    User updateById(UUID externalId, UserRequestDto entity);
 }

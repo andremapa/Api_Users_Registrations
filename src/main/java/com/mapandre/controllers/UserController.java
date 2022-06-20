@@ -41,7 +41,7 @@ public class UserController {
 
     @PostMapping(path = "/postUser")
     public ResponseEntity<UserResponseDto> postUser(@RequestBody @Valid UserRequestDto userRequestDto){
-        User obj = userService.post(userRequestDto);
+        User obj = userService.saveUser(userRequestDto);
         return new ResponseEntity<>(new UserResponseDto(obj), HttpStatus.CREATED);
     }
 
@@ -54,6 +54,6 @@ public class UserController {
     @PutMapping(path = "/putUserById/{externalId}")
     public ResponseEntity<UserResponseDto> putUser(@PathVariable UUID externalId,
                                                    @RequestBody @Valid UserRequestDto userRequestDto){
-        return ResponseEntity.ok(new UserResponseDto(userService.putById(externalId, userRequestDto)));
+        return ResponseEntity.ok(new UserResponseDto(userService.updateById(externalId, userRequestDto)));
     }
 }
