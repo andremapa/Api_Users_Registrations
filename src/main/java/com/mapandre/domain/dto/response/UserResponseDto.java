@@ -1,12 +1,13 @@
 package com.mapandre.domain.dto.response;
 
 import com.mapandre.domain.models.User;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class UserResponseDto {
+public class UserResponseDto extends RepresentationModel<UserResponseDto> {
 
     private final UUID externalId;
     private final String firstName;

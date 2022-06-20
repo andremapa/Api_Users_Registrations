@@ -1,6 +1,7 @@
 package com.mapandre.domain.models;
 
 import org.hibernate.annotations.Type;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity(name = "tb_users")
 public class User implements Serializable {
+    public static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

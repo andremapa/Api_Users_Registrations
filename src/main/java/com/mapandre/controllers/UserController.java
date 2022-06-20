@@ -13,6 +13,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -24,12 +27,16 @@ public class UserController {
 
     @GetMapping(path = "/getAllUsers")
     public ResponseEntity<List<UserResponseDto>> getAllUsers(){
-        return ResponseEntity.ok(userService.getAll().stream().map(UserResponseDto::new).toList());
+        return ResponseEntity.ok(userService.getAll().stream()
+                .map(UserResponseDto::new)
+                .map(userResponseDto -> userResponseDto.add(linkTo(methodOn(UserController.class)
+                        .getUser(userResponseDto.getExternalId())).withSelfRel())).toList());
     }
 
     @GetMapping(path = "/getUserById/{externalId}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable UUID externalId){
-        return ResponseEntity.ok(new UserResponseDto(userService.getById(externalId)));
+        return ResponseEntity.ok(new UserResponseDto(userService.getById(externalId))
+                .add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("Users List")));
     }
 
     @PostMapping(path = "/postUser")
