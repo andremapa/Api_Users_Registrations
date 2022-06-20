@@ -4,10 +4,11 @@ import com.mapandre.domain.models.User;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class UserResponseDto {
 
-    private final long externalId;
+    private final UUID externalId;
     private final String firstName;
     private final String lastName;
     private final String cpf;
@@ -23,7 +24,7 @@ public class UserResponseDto {
         this.birthDate = user.getBirthDate();
     }
 
-    public long getExternalId() {
+    public UUID getExternalId() {
         return externalId;
     }
 

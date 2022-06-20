@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/getUserById/{externalId}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable long externalId){
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable UUID externalId){
         return ResponseEntity.ok(new UserResponseDto(userService.getById(externalId)));
     }
 
@@ -38,13 +39,13 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/deleteUserById/{externalId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable long externalId){
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID externalId){
         userService.deleteById(externalId);
         return  ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/putUserById/{externalId}")
-    public ResponseEntity<UserResponseDto> putUser(@PathVariable long externalId,
+    public ResponseEntity<UserResponseDto> putUser(@PathVariable UUID externalId,
                                                    @RequestBody @Valid UserRequestDto userRequestDto){
         return ResponseEntity.ok(new UserResponseDto(userService.putById(externalId, userRequestDto)));
     }

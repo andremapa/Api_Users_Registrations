@@ -1,23 +1,27 @@
 package com.mapandre.domain.models;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity(name = "tb_users")
-public class User {
-
-    //TODO: CHANGE EXTERNAL ID TO UUID
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long databaseId;
     @Column(nullable = false, unique = true)
-    private long externalId;
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    private UUID externalId;
     @Column(nullable = false)
     private String firstName;
     @Column(nullable = false)
@@ -35,7 +39,7 @@ public class User {
     public User() {
     }
 
-    public User(long externalId, String firstName, String lastName, String cpf, String password, LocalDate birthDate) {
+    public User(UUID externalId, String firstName, String lastName, String cpf, String password, LocalDate birthDate) {
         this.externalId = externalId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,7 +52,7 @@ public class User {
         return databaseId;
     }
 
-    public long getExternalId() {
+    public UUID getExternalId() {
         return externalId;
     }
 
@@ -70,5 +74,17 @@ public class User {
 
     public LocalDate getBirthDate() {
         return birthDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return externalId.equals(user.externalId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(externalId);
     }
 }
