@@ -7,6 +7,7 @@ import com.mapandre.domain.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -28,31 +29,28 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getById(long externalId){
+    public User getById(UUID externalId){
         return repository.findByExternalId(externalId).orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     @Override
-    public void deleteById(long externalId){
+    public void deleteById(UUID externalId){
         User entity = repository.findByExternalId(externalId).orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND_EXCEPTION_MESSAGE));
         repository.delete(entity);
     }
 
     @Override
-    public User putById(long externalId, UserRequestDto entity){
-        //TODO: MODIFY THE METHOD TO BE MORE PERFORMATIVE
-        return repository.findAll().stream()
-                .filter(user -> user.getExternalId() == externalId)
+    public User putById(UUID externalId, UserRequestDto entity){
+        return repository.findByExternalId(externalId).stream()
                 .map(user -> user = updateData(entity, user.getExternalId()))
                 .findFirst().orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private User convertRequest(UserRequestDto requestDto){
-        //TODO: MAKE A BETTER RULER TO GENERATE A EXTERNAL ID;
-        return new User(repository.count(), requestDto.getFirstName(), requestDto.getLastName(), requestDto.getCpf(), requestDto.getPassword(), requestDto.getBirthDate());
+        return new User(UUID.randomUUID(), requestDto.getFirstName(), requestDto.getLastName(), requestDto.getCpf(), requestDto.getPassword(), requestDto.getBirthDate());
     }
 
-    private User updateData(UserRequestDto requestDto, long externalId){
+    private User updateData(UserRequestDto requestDto, UUID externalId){
         return new User(externalId, requestDto.getFirstName(), requestDto.getLastName(), requestDto.getCpf(), requestDto.getPassword(), requestDto.getBirthDate());
 
     }

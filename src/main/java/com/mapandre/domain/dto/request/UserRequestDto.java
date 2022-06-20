@@ -23,7 +23,6 @@ public class UserRequestDto {
     @Length(min = 6, max = 12)
     private final String password;
     @NotNull
-    //TODO: LOOK SOME CONSTRAINTS
     private final LocalDate birthDate;
 
     public UserRequestDto(String firstName, String lastName, String cpf, String password, String birthDate) {
@@ -31,7 +30,6 @@ public class UserRequestDto {
         this.lastName = lastName;
         this.cpf = cpf;
         this.password = password;
-        //TODO:org.springframework.http.converter.HttpMessageNotReadableException
         this.birthDate = LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
