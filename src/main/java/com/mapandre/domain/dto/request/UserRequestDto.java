@@ -1,5 +1,6 @@
 package com.mapandre.domain.dto.request;
 
+import com.mapandre.domain.models.User;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 public class UserRequestDto {
 
@@ -51,5 +53,9 @@ public class UserRequestDto {
 
     public LocalDate getBirthDate() {
         return birthDate;
+    }
+
+    public User convertToModel(){
+        return new User(UUID.randomUUID(), this.firstName, this.lastName, this.cpf, this.password, this.getBirthDate());
     }
 }
