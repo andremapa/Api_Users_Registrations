@@ -48,6 +48,5 @@ public class UserServiceImpl implements UserService{
 
     private User updateData(UserRequestDto requestDto, UUID externalId){
         return new User(externalId, requestDto.getFirstName(), requestDto.getLastName(), requestDto.getCpf(), requestDto.getPassword(), requestDto.getBirthDate());
-
     }
 }
