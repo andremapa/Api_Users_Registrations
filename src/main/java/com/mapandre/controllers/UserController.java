@@ -17,7 +17,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
@@ -29,7 +29,7 @@ public class UserController {
     public ResponseEntity<List<UserResponseDto>> getAllUsers(){
         return ResponseEntity.ok(userService.getAll().stream()
                 .map(UserResponseDto::new)
-                .map(userResponseDto -> userResponseDto.add(linkTo(methodOn(UserController.class)
+                .peek(userResponseDto -> userResponseDto.add(linkTo(methodOn(UserController.class)
                         .getUser(userResponseDto.getExternalId())).withSelfRel())).toList());
     }
 
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/deleteUserById/{externalId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID externalId){
+    public ResponseEntity<UserResponseDto> deleteUser(@PathVariable UUID externalId){
         userService.deleteById(externalId);
         return  ResponseEntity.ok().build();
     }
