@@ -1,14 +1,17 @@
 package com.mapandre.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mapandre.domain.dto.request.UserRequestDto;
 import com.mapandre.domain.models.User;
+import com.mapandre.domain.models.errors.DateFormatError;
 import com.mapandre.domain.models.errors.ResourceNotFoundError;
 import com.mapandre.domain.services.UserServiceImpl;
 import com.mapandre.exceptions.ResourceNotFoundException;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,6 +51,7 @@ class UserControllerTest {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     @Test
+    @DisplayName("Should create a new user on database and return http status 201 - Created")
     void ShouldCreateNewUserAndReturnHttpStatus201() throws Exception {
 
         UserRequestDto request = createRequest();
@@ -81,6 +86,24 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should return http status 400 - BadRequest when some of request fields is incorrect")
+    void ShouldReturnHttpStatus400WhenSomeOfRequestFieldsIsIncorrect() throws Exception {
+
+        UserRequestDto invalidRequest = createInvalidRequest();
+        String jsonInvalidRequest = mapper.writeValueAsString(invalidRequest);
+
+        mockMvc.perform(
+                post(BASE_URL + "/postUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInvalidRequest)
+        )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.exception", is(MethodArgumentNotValidException.class.getName())))
+                .andExpect(jsonPath("$.httpStatus", is("BAD_REQUEST")));
+    }
+
+    @Test
+    @DisplayName("Should find all users on database and return http status 200 - Ok")
     void ShouldFindAllUsersOnDatabaseHttpStatus200() throws Exception{
         List<User> data = List.of(createRequest().convertToModel());
 
@@ -95,6 +118,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should find a user by the id on database and return return http status 200 - Ok")
     void ShouldFindAUserByExternalIdHttpStatus200() throws Exception{
 
         User user = createRequest().convertToModel();
@@ -117,6 +141,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should return http status 404 - NotFound when the given id isn't valid")
     void ShouldReturnHttpStatus404WhenTheGivenIdIsInvalid() throws Exception {
         UUID random = UUID.randomUUID();
         doThrow(new ResourceNotFoundException("Resource not found by the informed id")).when(service).getById(random);
@@ -130,6 +155,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should update a user on database and return http status 200 - Ok")
     void ShouldUpdateUserByTheGivenExternalIdAndReturnHttpStatus200() throws Exception {
 
         User oldUser = createRequest().convertToModel();
@@ -167,6 +193,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should delete a user on database and return http status 200 - Ok")
     void ShouldDeleteUserByTheGivenIdAndReturnHttpStatus200() throws Exception {
 
         User user = createRequest().convertToModel();
@@ -183,5 +210,12 @@ class UserControllerTest {
                 .withFirstName("Alex").withLastName("Green")
                 .withCpf("988.677.210-70").withPassword("123456")
                 .withBirthDate("1985-08-08").build();
+    }
+
+    private UserRequestDto createInvalidRequest(){
+        return new UserRequestDto.Builder()
+                .withFirstName(" ").withLastName(" ")
+                .withCpf("000.000.000-00").withPassword(" ")
+                .withBirthDate("1999-07-25").build();
     }
 }
